@@ -1,0 +1,11 @@
+extends layout
+
+block content
+  h1= title
+  p Welcome to #{title}
+  form(method="POST", action="/stats")
+    p
+      label(for="handler") Twitter Handler
+      input#handler(name="handler")
+    p
+      input(type="submit", value="Go")
