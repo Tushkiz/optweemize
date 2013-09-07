@@ -12,8 +12,9 @@ var oa = new OAuth(
 var access_token = "31457410-eLJ4mn8wZbYf24DjgyLxD5dB4IdYJPmBvnno4O9A";
 var access_token_secret = "wJt1RhDP9yWIHY2jynA7OD28dFT8Ne0SPRJ5N3pZzM";
 
-exports.getLatestTweets = function (handler, count, callback) {
-  oa.get("https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name=" + handler + "&count=" + count, access_token, access_token_secret, function (error, data) {
+
+exports.getFollowers = function (handler, callback) {
+  oa.get("https://api.twitter.com/1.1/followers/ids.json?screen_name=" + handler, access_token, access_token_secret, function (error, data) {
     var result;
     if (error) {
       result = { error: error };
@@ -26,8 +27,8 @@ exports.getLatestTweets = function (handler, count, callback) {
   });
 }
 
-exports.getUserStats = function (handler, callback) {
-  oa.get("https://api.twitter.com/1.1/users/lookup.json?screen_name=" + handler, access_token, access_token_secret, function (error, data) {
+exports.getTweets = function (id_str, count, callback) {
+  oa.get("https://api.twitter.com/1.1/statuses/user_timeline.json?id_str=" + id_str + "&count=" + count, access_token, access_token_secret, function (error, data) {
     var result;
     if (error) {
       result = { error: error };
@@ -39,6 +40,12 @@ exports.getUserStats = function (handler, callback) {
 
   });
 }
+
+exports.extractTimeData = function (dateString) {
+  return new Date(dateString).getUTCHours();
+}
+
+// ---------------------------- //
 
 exports.getLatestProfilePicture = function (handler, callback) {
   oa.get("http://api.twitter.com/1.1/users/show.json?screen_name=" + handler, access_token, access_token_secret, function (error, data) {
@@ -47,6 +54,20 @@ exports.getLatestProfilePicture = function (handler, callback) {
       result = {error: error};
     } else {
       result = JSON.parse(data);
+    }
+
+    callback(result);
+
+  });
+}
+
+exports.getUserDetails = function (handler, callback) {
+  oa.get("https://api.twitter.com/1.1/users/lookup.json?screen_name=" + handler, access_token, access_token_secret, function (error, data) {
+    var result;
+    if (error) {
+      result = { error: error };
+    } else {
+      result = data;
     }
 
     callback(result);
