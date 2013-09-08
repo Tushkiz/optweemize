@@ -1,5 +1,7 @@
 extends layout
 
 block content
-  h1 Statistics for #{data[0].name}
-  h2 Followers #{data[0].followers_count}
+  h1 Statistics for #{handler}
+  each item, i in data
+    li #{i}
+      meter(value=item, min=0, max=max)

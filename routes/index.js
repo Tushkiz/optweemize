@@ -13,39 +13,11 @@ exports.index = function(req, res){
 exports.stats = function(req, res) {
   var handler = req.body.handler;
 
-  twitterUtil.calc(handler, function(data) {
-    console.log('calculating....');
+  twitterUtil.calc(handler, function(data, max) {
+    res.render('stats', { handler: handler, data: data, max: max });
   });
 
-  /*twitterUtil.getFollowers(handler, function(data) {
-    var followerIds = JSON.parse(data).ids;
-    followerIds.map(function(follower) {
-      var tweetsPerFollower = 50;
-
-      twitterUtil.getTweets(follower, tweetsPerFollower, function(tweets) {
-        JSON.parse(tweets).map(function(tweet) {
-          bucket_number = twitterUtil.extractTimeData(tweet.created_at)
-          chartData[bucket_number]++;
-        });
-      });
-    });
-  });*/
+  /*var data = [0, 0, 0, 0, 0, 264, 440, 880, 88, 176, 440, 352, 616, 88, 0, 0, 264, 352, 440, 0, 0, 0, 0, 0],
+      max = 1000;
+  res.render('stats', { handler: handler, data: data, max: max });*/
 };
-
-
-
-
-
-
-
-/*function render (res, data) {
-  res.render('stats', { data: JSON.parse(data), followers: });
-}*/
-
-// exports.getStats = function(req, res) {
-//   var twitterHandle = req.param.twitterHandle;
-//   var followers=getFollowerIds(twitterHandle);
-//   var timesOfTweets=getTweetsOfFollowers(followers);
-//   var chartData=extractTimeData(timesOfTweets);
-//   res.end(userDetails,chartData);
-// };

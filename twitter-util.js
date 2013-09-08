@@ -34,13 +34,12 @@ var getFollowers = exports.getFollowers = function (handler) {
 }
 
 var getTweets = exports.getTweets = function (id_str, count) {
-  //console.log('inside getTweets');
   var defered = Q.defer();
   oa.get("https://api.twitter.com/1.1/statuses/user_timeline.json?id_str=" + id_str + "&count=" + count, access_token, access_token_secret, function (error, data) {
     var tweets;
     if (error) {
       tweets = { error: error };
-      //console.error(result.error);
+      console.error(result.error);
       defered.reject();
     } else {
       tweets = data;
@@ -48,12 +47,9 @@ var getTweets = exports.getTweets = function (id_str, count) {
         bucket_number = extractTimeData(tweet.created_at);
         chartData[bucket_number]++;
       });
-      console.log('got it');
+      console.log(id_str);
       defered.resolve('done');
     }
-    //console.log('getting their tweets...' + typeof result);
-    //callback(result);
-    //return result;
 
   });
   return defered.promise;
@@ -67,15 +63,18 @@ var extractTimeData = exports.extractTimeData = function (dateString) {
 exports.calc = function (handler, callback) {
   getFollowers(handler)
   .then(function (followerIds) {
-    //followerIds.map(getTweets(follower, 50));
     var local =[];
     for (var i = 0; i < followerIds.length; i++) {
       local.push(getTweets(followerIds[i], 50));
     };
     Q.all(local).spread(function(){
-      console.log(chartData);
+      var max = 0;
+      for (var i = 0; i < chartData.length; i++) {
+        if(max < chartData[i]) max = chartData[i];
+      };
+      callback(chartData, max);
+      console.log(chartData, max);
     });
-    //console.log(chartData);
   });
 }
 
