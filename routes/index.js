@@ -11,27 +11,25 @@ exports.index = function(req, res){
 };
 
 exports.stats = function(req, res) {
-  var handler = req.body.handler,
-      bucket_number,
-      chartData = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+  var handler = req.body.handler;
 
-  twitterUtil.getFollowers(handler, function(data) {
+  twitterUtil.calc(handler, function(data) {
+    console.log('calculating....');
+  });
+
+  /*twitterUtil.getFollowers(handler, function(data) {
     var followerIds = JSON.parse(data).ids;
     followerIds.map(function(follower) {
       var tweetsPerFollower = 50;
 
       twitterUtil.getTweets(follower, tweetsPerFollower, function(tweets) {
-
         JSON.parse(tweets).map(function(tweet) {
           bucket_number = twitterUtil.extractTimeData(tweet.created_at)
           chartData[bucket_number]++;
-          res.write(JSON.stringify(chartData));
         });
-        //on success -> res.write(chartData)
       });
-
     });
-  });
+  });*/
 };
 
 

@@ -1,5 +1,7 @@
 var OAuth = require('oauth').OAuth;
 
+var Q = require('q');
+
 var oa = new OAuth(
         "https://api.twitter.com/oauth/request_token",
         "https://api.twitter.com/oauth/access_token",
@@ -13,64 +15,96 @@ var access_token = "31457410-eLJ4mn8wZbYf24DjgyLxD5dB4IdYJPmBvnno4O9A";
 var access_token_secret = "wJt1RhDP9yWIHY2jynA7OD28dFT8Ne0SPRJ5N3pZzM";
 
 
-exports.getFollowers = function (handler, callback) {
+var bucket_number;
+var chartData = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+
+var getFollowers = exports.getFollowers = function (handler) {
+  var defered = Q.defer();
   oa.get("https://api.twitter.com/1.1/followers/ids.json?screen_name=" + handler, access_token, access_token_secret, function (error, data) {
     var result;
     if (error) {
       result = { error: error };
+      defered.reject();
     } else {
       result = data;
+      defered.resolve(JSON.parse(result).ids);
     }
-
-    callback(result);
-
   });
+  return defered.promise;
 }
 
-exports.getTweets = function (id_str, count, callback) {
+var getTweets = exports.getTweets = function (id_str, count) {
+  //console.log('inside getTweets');
+  var defered = Q.defer();
   oa.get("https://api.twitter.com/1.1/statuses/user_timeline.json?id_str=" + id_str + "&count=" + count, access_token, access_token_secret, function (error, data) {
-    var result;
+    var tweets;
     if (error) {
-      result = { error: error };
+      tweets = { error: error };
+      //console.error(result.error);
+      defered.reject();
     } else {
-      result = data;
+      tweets = data;
+      JSON.parse(tweets).map(function (tweet) {
+        bucket_number = extractTimeData(tweet.created_at);
+        chartData[bucket_number]++;
+      });
+      console.log('got it');
+      defered.resolve('done');
     }
-
-    callback(result);
+    //console.log('getting their tweets...' + typeof result);
+    //callback(result);
+    //return result;
 
   });
+  return defered.promise;
 }
 
-exports.extractTimeData = function (dateString) {
+var extractTimeData = exports.extractTimeData = function (dateString) {
   return new Date(dateString).getUTCHours();
+}
+
+
+exports.calc = function (handler, callback) {
+  getFollowers(handler)
+  .then(function (followerIds) {
+    //followerIds.map(getTweets(follower, 50));
+    var local =[];
+    for (var i = 0; i < followerIds.length; i++) {
+      local.push(getTweets(followerIds[i], 50));
+    };
+    Q.all(local).spread(function(){
+      console.log(chartData);
+    });
+    //console.log(chartData);
+  });
 }
 
 // ---------------------------- //
 
-exports.getLatestProfilePicture = function (handler, callback) {
-  oa.get("http://api.twitter.com/1.1/users/show.json?screen_name=" + handler, access_token, access_token_secret, function (error, data) {
-    var result;
-    if (error) {
-      result = {error: error};
-    } else {
-      result = JSON.parse(data);
-    }
+// exports.getLatestProfilePicture = function (handler, callback) {
+//   oa.get("http://api.twitter.com/1.1/users/show.json?screen_name=" + handler, access_token, access_token_secret, function (error, data) {
+//     var result;
+//     if (error) {
+//       result = {error: error};
+//     } else {
+//       result = JSON.parse(data);
+//     }
 
-    callback(result);
+//     callback(result);
 
-  });
-}
+//   });
+// }
 
-exports.getUserDetails = function (handler, callback) {
-  oa.get("https://api.twitter.com/1.1/users/lookup.json?screen_name=" + handler, access_token, access_token_secret, function (error, data) {
-    var result;
-    if (error) {
-      result = { error: error };
-    } else {
-      result = data;
-    }
+// exports.getUserDetails = function (handler, callback) {
+//   oa.get("https://api.twitter.com/1.1/users/lookup.json?screen_name=" + handler, access_token, access_token_secret, function (error, data) {
+//     var result;
+//     if (error) {
+//       result = { error: error };
+//     } else {
+//       result = data;
+//     }
 
-    callback(result);
+//     callback(result);
 
-  });
-}
+//   });
+// }

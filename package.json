@@ -1,12 +1,23 @@
 {
-  "name": "application-name",
+  "name": "optweemizer",
   "version": "0.0.1",
-  "private": true,
+  "description": "Calculating Optimal Tweet Time",
+  "main": "app.js",
   "scripts": {
-    "start": "node app.js"
+    "test": "node app.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:Tushkiz/optweemize.git"
+  },
+  "keywords": [
+    "optimal",
+    "tweets"
+  ],
+  "author": "Tushar Sonawane",
   "dependencies": {
     "express": "3.3.4",
-    "jade": "*"
+    "jade": "*",
+    "oauth": "*"
   }
 }
