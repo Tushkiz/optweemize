@@ -1,11 +1,17 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
-  form(method="POST", action="/stats")
-    p
-      label(for="handler") Twitter Handler
-      input#handler(name="handler")
-    p
-      input(type="submit", value="Go")
+  div.container
+    h1 Optweemize
+    form.input-form(method="POST", action="/stats")
+      div.input-handler
+        span @
+        input.textbox(type="text", placeholder="Twitter ID")
+        br
+        br
+        input.button(type="submit", value="Let's go!")
+
+  footer.footer #{'with ♥ from '}
+    a(href="http://tushkiz.github.io") tushkiz
+    span
+      a(href="https://github.com/Tushkiz/optweemize") fork on github

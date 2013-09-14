@@ -7,7 +7,7 @@
 var twitterUtil = require('../twitter-util');
 
 exports.index = function(req, res){
-  res.render('index', { title: 'Optweemize' });
+  res.render('index', { title: 'Optweemize - Tweet Optimization Analysis', author: 'Tushar Sonawane' });
 };
 
 exports.stats = function(req, res) {
